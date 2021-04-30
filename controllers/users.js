@@ -1,8 +1,7 @@
 import User from "../models/User.js";
+import Combo from "../models/Combo.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-
-const secret = "test";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -20,7 +19,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Password is incorrect" });
     const token = jwt.sign(
       { email: existingUser.email, id: existingUser._id },
-      secret,
+      process.env.JWT_SECRET,
       {
         expiresIn: "1h",
       }
@@ -53,12 +52,52 @@ export const signup = async (req, res) => {
       username,
       password: hashedPassword,
     });
-    const token = jwt.sign({ email: result.email, id: result._id }, secret, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { email: result.email, id: result._id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
     res
       .status(200)
       .json({ result, token, message: "User created successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Oooops, something went wrong" });
+  }
+};
+
+export const getSavedCombos = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const combos = await User.findById(id);
+    if (!combos)
+      return res.status(404).json({ message: "No saved Combos yet." });
+    res.json(combos);
+  } catch (error) {
+    res.status(500).json({ message: "Oooops, something went wrong" });
+  }
+};
+
+export const saveCombo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { savedcombos } = req.body;
+    const newCombo = await Combo.create([]);
+    const combo = await User.findOneAndUpdate(
+      { id },
+      { $push: { savedCombos: newCombo.id } }
+    );
+    res.json(combo);
+  } catch (error) {
+    res.status(500).json({ message: "Oooops, something went wrong" });
+  }
+};
+
+export const approvedSession = async (req, res) => {
+  try {
+    res.json({ success: "Valid token", user: req.user });
+    console.log(req.user);
   } catch (error) {
     res.status(500).json({ message: "Oooops, something went wrong" });
   }
