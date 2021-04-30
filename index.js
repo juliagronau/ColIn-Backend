@@ -8,8 +8,7 @@ import users from "./routes/users.js";
 const port = process.env.PORT || 5000;
 const app = express();
 const corsOptions = {
-  origin:
-    "http://localhost:3000" || "https://colin-color-inspirator.netlify.app",
+  origin: process.env.APP_URI || "http://localhost:3000",
   credentials: true,
 };
 
