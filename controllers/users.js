@@ -70,7 +70,9 @@ export const signup = async (req, res) => {
 export const getSavedCombos = async (req, res) => {
   try {
     const { id } = req.params;
-    const combos = await User.findById(id);
+    const combos = await User.findById(id, { savedcombos: 1 }).populate(
+      "savedcombos"
+    );
     if (!combos)
       return res.status(404).json({ message: "No saved Combos yet." });
     res.json(combos);
@@ -83,10 +85,11 @@ export const saveCombo = async (req, res) => {
   try {
     const { id } = req.params;
     const { savedcombos } = req.body;
-    const newCombo = await Combo.create([]);
+    const newCombo = await Combo.create({ savedcombos });
     const combo = await User.findOneAndUpdate(
-      { id },
-      { $push: { savedCombos: newCombo.id } }
+      id,
+      { $push: { savedcombos: newCombo.id } },
+      { new: true }
     );
     res.json(combo);
   } catch (error) {

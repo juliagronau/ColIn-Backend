@@ -2,16 +2,14 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const comboSchema = new Schema({
-  savedcombo: {
+  savedcombos: {
     type: [
       {
-        id: Number,
         name: String,
         hex: String,
       },
     ],
   },
-  user_id: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
 export default model("Combo", comboSchema);

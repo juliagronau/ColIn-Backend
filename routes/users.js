@@ -12,7 +12,7 @@ const users = express.Router();
 
 users.post("/login", login);
 users.post("/signup", signup);
-users.put("/:id/savecombo", saveCombo);
+users.post("/:id/savecombo", saveCombo);
 users.get("/:id/savedcombos", getSavedCombos);
 users.get("/verify-session", verifyToken, approvedSession);
 
