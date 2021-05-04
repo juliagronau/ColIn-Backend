@@ -87,13 +87,23 @@ export const saveCombo = async (req, res) => {
     const { savedcombos } = req.body;
     const newCombo = await Combo.create({ savedcombos });
     const combo = await User.findOneAndUpdate(
-      id,
+      { _id: id },
       { $push: { savedcombos: newCombo.id } },
       { new: true }
     );
     res.json(combo);
   } catch (error) {
     res.status(500).json({ message: "Oooops, something went wrong" });
+  }
+};
+
+export const deleteCombo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Combo.deleteOne({ _id: id });
+    res.json({ message: "Combo deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
