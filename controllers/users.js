@@ -6,7 +6,8 @@ import bcrypt from "bcryptjs";
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email }).select("+password");
+    const existingUserNoPw = await User.findOne({ email });
     if (!existingUser)
       return res
         .status(404)
@@ -25,7 +26,7 @@ export const login = async (req, res) => {
       }
     );
     res.status(200).json({
-      result: existingUser,
+      result: existingUserNoPw,
       token,
     });
   } catch (error) {
@@ -110,7 +111,6 @@ export const deleteCombo = async (req, res) => {
 export const approvedSession = async (req, res) => {
   try {
     res.json({ success: "Valid token", user: req.user });
-    console.log(req.user);
   } catch (error) {
     res.status(500).json({ message: "Oooops, something went wrong" });
   }
